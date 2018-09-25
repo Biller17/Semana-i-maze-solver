@@ -1,5 +1,4 @@
 # To compile use python lectura.py < filename.txt
-
 import fileinput
 import re
 
@@ -12,8 +11,8 @@ for line in fileinput.input():
         size = re.findall(r"[-+]?\d*\.\d+|\d+", line)
         size = list(map(int, size))
         labyrinth = [0] * size[1]
-        for row in range(size[1]):
-            labyrinth[row] = [0] * size[0]
+        for i in range(size[1]):
+            labyrinth[i] = [0] * size[0]
     #Saves start location in array of two numbers
     if lineno == 1:
         start = re.findall(r"[-+]?\d*\.\d+|\d+", line)
@@ -26,8 +25,8 @@ for line in fileinput.input():
     if lineno > 2:
         temp = re.findall(r"[-+]?\d*\.\d+|\d+", line)
         mazerow = [int(x) for x in str(temp[0])]
-        for column in range(size[0]):
-            labyrinth[row][column] = mazerow[column]
+        for i in range(size[0]):
+            labyrinth[row][i] = mazerow[i]
         row += 1
     lineno += 1
 
