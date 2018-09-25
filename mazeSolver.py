@@ -9,8 +9,9 @@ import time
 
 #Node class for all nodes in the search tree
 class Node:
-    def __init__(self, maze, moveDone, father,isVisited):
+    def __init__(self, position, maze, moveDone, father,isVisited):
         self.maze = maze
+        self.position = position
         self.moveDone = moveDone
         self.isVisited = isVisited
         self.father = father
@@ -24,22 +25,7 @@ class Node:
             print(self.maze[i])
 
 
-#gets matrix position of zero in the board
-    def getBlankPosition(self):
-        for i in range(len(self.maze)):
-            for j in range(len(self.maze[i])):
-                if(self.maze[i][j] == 0):
-                    posY = i
-                    posX = j
-        return  posY, posX
-
-    def getValuePosition(self, value, finalBoard):
-        for i in range(len(finalBoard)):
-            for j in range(len(finalBoard)):
-                if(value  == finalBoard[i][j]):
-                    return i, j
-
-    def checkH1(self, finalBoard):
+    def checkHeuristic(self, finalBoard):
         heuristic = 0
         length = self.getAccumulatedPathWeight(0)
         for i in range(len(self.maze)):
@@ -48,19 +34,6 @@ class Node:
                     heuristic += 1
         self.heuristic = heuristic + length
         # return heuristic
-
-    def checkH2(self, finalBoard):
-        heuristic = 0
-        length = self.getAccumulatedPathWeight(0)
-        for i in range(len(self.maze)):
-            for j in range(len(self.maze[i])):
-                x,y = self.getValuePosition(self.maze[i][j], finalBoard)
-                heuristic += (abs(i - x) + abs(j - y))
-        self.heuristic = heuristic + length
-
-
-
-        # print("checking heuristic 2")
 
 
 #returns an array of all possible moves in current zero position
@@ -93,27 +66,7 @@ class Node:
             self.childNodes.append(Node(self.getNewBoard(possibleMoves[i]), possibleMoves[i],self, 0))
         return self.childNodes
 
-#reads the move specified and changes board accordingly
-    def getNewBoard(self,move):
-        posY, posX = self.getBlankPosition()
-        newBoard = copy.deepcopy(self.maze)
-        if(move == "U"):
-            newBoard[posY][posX] = newBoard[posY-1][posX]
-            newBoard[posY-1][posX] = 0
-        if(move == "D"):
-            newBoard[posY][posX] = newBoard[posY+1][posX]
-            newBoard[posY+1][posX] = 0
-        if(move == "R"):
-            newBoard[posY][posX] = newBoard[posY][posX+1]
-            newBoard[posY][posX+1] = 0
-        if(move == "L"):
-            newBoard[posY][posX] = newBoard[posY][posX-1]
-            newBoard[posY][posX-1] = 0
-
-        # for i in range(len(newBoard)):
-        #     print(newBoard[i])
-        return newBoard
-
+        
 #recursive function that returns all the moves done to reach the node with the solution
     def returnSolutionMove(self,moveset):
         # print(moveset)
@@ -197,7 +150,7 @@ def aStar():
                 # currentNode.printmaze()
                 # print("\n")
                 if(checkIfVisited(children[i], visitedNodes) == 0):
-                    print(children[i].checkH1(finalBoard))
+                    print(children[i].checkHeuristic(finalBoard))
                     queue.insert(0, children[i])
             prioritizeNodes(queue)
         else:
