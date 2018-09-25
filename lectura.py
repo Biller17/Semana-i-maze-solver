@@ -6,10 +6,11 @@ lineno = 0
 row = 0
 
 for line in fileinput.input():
-	#Saves labyrinth size in array of two numbers and creates matrix to store it
+	#Saves labyrinth size in array of two numbers
     if lineno == 0:
         size = re.findall(r"[-+]?\d*\.\d+|\d+", line)
         size = list(map(int, size))
+        #Creates matrix to store labyrinth
         labyrinth = [0] * size[1]
         for i in range(size[1]):
             labyrinth[i] = [0] * size[0]
@@ -25,8 +26,8 @@ for line in fileinput.input():
     if lineno > 2:
         temp = re.findall(r"[-+]?\d*\.\d+|\d+", line)
         mazerow = [int(x) for x in str(temp[0])]
-        for i in range(size[0]):
-            labyrinth[row][i] = mazerow[i]
+        for column in range(size[0]):
+            labyrinth[row][column] = mazerow[column]
         row += 1
     lineno += 1
 
