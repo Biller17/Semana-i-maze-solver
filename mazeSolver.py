@@ -1,3 +1,10 @@
+"""
+Miguel Monterrubio Bandera A01022153
+Adrián Biller Alcántara A01018940
+Omar Sanseviero Güezmes A01021626
+"""
+
+
 import fileinput
 import re
 import time
@@ -97,7 +104,7 @@ def aStar():
                 currentNode = currentNode.father
             return solution[::-1]
         numberOfActions+=1
-    
+
 
 def readLabyrinth():
     start_time = time.time()
@@ -121,3 +128,4 @@ def readLabyrinth():
 if __name__ == '__main__':
     start_time = time.time()
     print("".join(aStar()))
+    print("El programa tomó %s segundos " % (time.time() - start_time))
