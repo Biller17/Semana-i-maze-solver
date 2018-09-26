@@ -1,6 +1,5 @@
 import fileinput
 import re
-
 import time
 import copy
 import random
@@ -9,9 +8,10 @@ import time
 
 #Node class for all nodes in the search tree
 class Node:
-    def __init__(self, position, maze, moveDone, father,isVisited):
+    def __init__(self, position, maze, exit, moveDone, father, isVisited):
         self.maze = maze
         self.position = position
+        self.exit = exit
         self.moveDone = moveDone
         self.isVisited = isVisited
         self.father = father
@@ -20,39 +20,43 @@ class Node:
 
 
 
-    def printmaze(self):
-        for i in range(len(self.maze)):
-            print(self.maze[i])
+    # def printmaze(self):
+    #     for i in range(len(self.maze)):
+    #         print(self.maze[i])
 
 
-    def checkHeuristic(self, finalBoard):
+    def checkHeuristic(self):
         heuristic = 0
         length = self.getAccumulatedPathWeight(0)
-        for i in range(len(self.maze)):
-            for j in range(len(self.maze[i])):
-                if(self.maze[i][j] != finalBoard[i][j]):
-                    heuristic += 1
+        heuristic += (abs(self.position[0] - self.exit[0]) + abs(self.position[1] - self.exit[1]))
         self.heuristic = heuristic + length
         # return heuristic
 
 
 #returns an array of all possible moves in current zero position
     def checkPossibleMoves(self):
-        posY, posX = self.getBlankPosition()
+        posX  = self.position[0]
+        posY = self.position[1]
+        labyrinthSize = len(self.maze)-1
         moves = []
         #check Up
-        if(posY -1 >= 0):
-            moves.append("U")
+        # print("(", posX, ",", posY, ")")
+        if((labyrinthSize - posY - 1) >= 0):
+            if(self.maze[labyrinthSize-posY - 1][posX] == '0'):
+                moves.append(["U",[posX, posY-1]])
             #up is possible
         #check Down
-        if(posY +1 <= len(self.maze)-1):
-            moves.append("D")
+        if((labyrinthSize - posY + 1) <= labyrinthSize):
+            if(self.maze[labyrinthSize-posY + 1][posX] == '0'):
+                moves.append(["D", [posX, posY+1]])
         #check Right
-        if(posX +1 <= len(self.maze[0])-1):
-            moves.append("R")
+        if(posX + 1 < len(self.maze[0])):
+            if(self.maze[labyrinthSize - posY][posX + 1] == '0'):
+                moves.append(["R",[posX+1, posY]])
         #check Left
-        if(posX -1 >= 0):
-            moves.append("L")
+        if(posX - 1 >= 0):
+            if(self.maze[labyrinthSize - posY][posX - 1] == '0'):
+                moves.append(["L",[posX-1, posY]])
         # print(moves)
         # self.createChildren(moves)
         return moves
@@ -62,11 +66,15 @@ class Node:
         possibleMoves = self.checkPossibleMoves()
         # print(possibleMoves)
         # print("possible moves",len(possibleMoves))
+        #self, position, maze, exit, moveDone, father, isVisited
+        print(self.position)
+        print(possibleMoves)
         for i in range(len(possibleMoves)):
-            self.childNodes.append(Node(self.getNewBoard(possibleMoves[i]), possibleMoves[i],self, 0))
+            self.childNodes.append(Node(possibleMoves[i][1], self.maze, self.exit, possibleMoves[i][0], self, 0))
         return self.childNodes
 
-        
+
+
 #recursive function that returns all the moves done to reach the node with the solution
     def returnSolutionMove(self,moveset):
         # print(moveset)
@@ -89,7 +97,7 @@ class Node:
 
 def checkIfVisited(node, nodeArray):
     for i in range(len(nodeArray)):
-        if(node.maze == nodeArray[i].maze):
+        if(node.position == nodeArray[i].position):
             return 1
     return 0
 
@@ -130,27 +138,24 @@ def partition(array, left, right, pivot):
 def aStar():
     #this will be the queue array to check the nodes
     maze, start, exit = readLabyrinth()
-    print(start)
-    print(exit)
+    # print(start)
     queue = []
     visitedNodes = []
     foundExit = False
-    root = Node(maze,"", None, 0)
+    root = Node(start, maze, exit ,"", None, 0)
     queue.insert(0, root)
     numberOfActions = 0
     while(foundExit != True):
         currentNode = queue.pop(0)
-        print("board: ", numberOfActions)
+    #     print("board: ", numberOfActions)
         #if current node does not have the answer then expand and create children with possible moves and add them to the queue
-        if(currentNode.maze != finalBoard):
+        if(currentNode.position != exit):
             visitedNodes.append(currentNode)
             children = currentNode.createChildren()
             for i in range(len(children)):
                 # print("child")
-                # currentNode.printmaze()
-                # print("\n")
                 if(checkIfVisited(children[i], visitedNodes) == 0):
-                    print(children[i].checkHeuristic(finalBoard))
+                    children[i].checkHeuristic()
                     queue.insert(0, children[i])
             prioritizeNodes(queue)
         else:
@@ -188,5 +193,5 @@ def readLabyrinth():
 
 if __name__ == '__main__':
     start_time = time.time()
-    aStar(maze)
+    print(aStar())
     print("El programa tomó %s segundos " % (time.time() - start_time))
