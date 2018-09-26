@@ -43,12 +43,12 @@ class Node:
         # print("(", posX, ",", posY, ")")
         if((labyrinthSize - posY - 1) >= 0):
             if(self.maze[labyrinthSize-posY - 1][posX] == '0'):
-                moves.append(["U",[posX, posY-1]])
+                moves.append(["U",[posX, posY+1]])
             #up is possible
         #check Down
         if((labyrinthSize - posY + 1) <= labyrinthSize):
             if(self.maze[labyrinthSize-posY + 1][posX] == '0'):
-                moves.append(["D", [posX, posY+1]])
+                moves.append(["D", [posX, posY-1]])
         #check Right
         if(posX + 1 < len(self.maze[0])):
             if(self.maze[labyrinthSize - posY][posX + 1] == '0'):
