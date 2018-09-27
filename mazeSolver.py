@@ -47,12 +47,13 @@ def bfs():
                         pq.put((heuristic, maze[child[1]]))
         else:
             solution = ''
-            while (currentNode != None):
-                print(currentNode)
-                node = currentNode[2]
+            node = currentNode
+            while (list(node[0]) != start):
+                node = currentNode[-1]
                 solution += node[-1]
                 currentNode = maze[node[0]]
-            return "".join(solution[::-1])
+            print(solution[::-1])
+            return
         numberOfActions+=1
     print("-")
 
