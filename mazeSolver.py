@@ -19,15 +19,19 @@ def checkHeuristic(child):
     heuristic = 2*(abs(child[0] - exit[0]) + abs(child[1] - exit[1]))
     return heuristic
 
+def getMove(currentNode, childPos):
+    for elem in currentNode:
+        if elem[1] == childPos:
+            return elem[2]
+
 #a* algorithm with heuristic of out of place numbers
-def aStar():
+def bfs():
     path = ''
     #this will be the queue array to check the nodes
     maze, start = readLabyrinth()
     root = maze[tuple(start)]
     pq = queue.PriorityQueue()
     pq.put((0, root))
-
     numberOfActions = 0
     while(not pq.empty()):
         currentNode = pq.get()[1]
@@ -35,16 +39,19 @@ def aStar():
         #if current node does not have the answer then expand and create children with possible moves and add them to the queue
         if(list(currentNode[0][0]) != exit):
             for child in currentNode:
-                if(not visited[child[1]]):
-                    print(child[1])
-                    heuristic = checkHeuristic(child[1])
-                    #maze[child[1]].append(currentNode[0][0])
-                    pq.put((heuristic, maze[child[1]]))
+                if(len(child[1]) > 1):
+                    if(not visited[child[1]]):
+                        #print(child[1])
+                        heuristic = checkHeuristic(child[1])
+                        maze[child[1]].append([currentNode[0][0], getMove(currentNode, child[1])])
+                        pq.put((heuristic, maze[child[1]]))
         else:
             solution = ''
             while (currentNode != None):
-                pass
-                #print(currentNode)
+                print(currentNode)
+                node = currentNode[2]
+                solution += node[-1]
+                currentNode = maze[node[0]]
             return "".join(solution[::-1])
         numberOfActions+=1
     print("-")
@@ -90,4 +97,4 @@ def readLabyrinth():
 
 
 if __name__ == '__main__':
-    aStar()
+    bfs()
