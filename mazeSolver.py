@@ -11,11 +11,7 @@ import queue
 from collections import defaultdict
 
 
-exit = None
-visited = None
-maze = None
-
-def checkHeuristic(child):
+def checkHeuristic(child, exit):
     heuristic = 2*(abs(child[0] - exit[0]) + abs(child[1] - exit[1]))
     return heuristic
 
@@ -28,27 +24,24 @@ def getMove(currentNode, childPos):
 def bfs():
     path = ''
     #this will be the queue array to check the nodes
-    maze, start = readLabyrinth()
-    root = maze[tuple(start)]
+    maze, start, exit, visited = readLabyrinth()
+    root = maze[(start)]
     pq = queue.PriorityQueue()
     pq.put((0, root))
     numberOfActions = 0
     while(not pq.empty()):
         currentNode = pq.get()[1]
         visited[currentNode[0][0]] = True
-        #if current node does not have the answer then expand and create children with possible moves and add them to the queue
-        if(list(currentNode[0][0]) != exit):
+        if(currentNode[0][0] != exit):
             for child in currentNode:
-                if(len(child[1]) > 1):
-                    if(not visited[child[1]]):
-                        #print(child[1])
-                        heuristic = checkHeuristic(child[1])
-                        maze[child[1]].append([currentNode[0][0], getMove(currentNode, child[1])])
-                        pq.put((heuristic, maze[child[1]]))
+                if len(child[1]) > 1 and not visited[child[1]]:
+                    heuristic = checkHeuristic(child[1], exit)
+                    maze[child[1]].append([currentNode[0][0], getMove(currentNode, child[1])])
+                    pq.put((heuristic, maze[child[1]]))
         else:
             solution = ''
             node = currentNode
-            while (list(node[0]) != start):
+            while (node[0] != start):
                 node = currentNode[-1]
                 solution += node[-1]
                 currentNode = maze[node[0]]
@@ -60,7 +53,6 @@ def bfs():
 
 def readLabyrinth():
     global exit
-    global visited
     lineno = 0
     graph = defaultdict(list)
     visited = {}
@@ -94,7 +86,7 @@ def readLabyrinth():
             exit = list(map(int, end))
             exit = [exit[0], size[1]-exit[1]-1]
         lineno += 1
-    return graph, start
+    return graph, tuple(start), tuple(exit), visited
 
 
 if __name__ == '__main__':
