@@ -7,9 +7,6 @@ Omar Sanseviero Güezmes A01021626
 
 import fileinput
 import re
-import time
-import time
-import sys
 import queue
 
 
@@ -25,10 +22,8 @@ class Node:
         self.heuristic = 0
 
     def checkHeuristic(self):
-        heuristic = 0
-        heuristic += (abs(self.position[0] - self.exit[0]) + abs(self.position[1] - self.exit[1]))
+        heuristic = 2*(abs(self.position[0] - self.exit[0]) + abs(self.position[1] - self.exit[1]))
         self.heuristic = heuristic
-        # return heuristic
 
     def __lt__(self,other):
         return (self.heuristic<other.heuristic)
@@ -66,12 +61,6 @@ class Node:
             self.childNodes.append(Node(possibleMoves[i][1], self.maze, self.exit, possibleMoves[i][0], self))
         return self.childNodes
 
-def checkIfVisited(node, nodeArray):
-    for i in range(len(nodeArray)):
-        if(node.position == nodeArray[i].position):
-            return 1
-    return 0
-
 #a* algorithm with heuristic of out of place numbers
 def aStar():
     #this will be the queue array to check the nodes
@@ -89,11 +78,11 @@ def aStar():
         currentNode = pq.get()[1]
         #if current node does not have the answer then expand and create children with possible moves and add them to the queue
         if(currentNode.position != exit):
-            visitedNodes.append(currentNode)
+            visitedNodes.append(currentNode.position)
             children = currentNode.createChildren()
             for i in range(len(children)):
                 # print("child")
-                if(checkIfVisited(children[i], visitedNodes) == 0):
+                if(children[i].position not in visitedNodes):
                     children[i].checkHeuristic()
                     pq.put((children[i].heuristic, children[i]))
         else:
@@ -107,8 +96,6 @@ def aStar():
 
 
 def readLabyrinth():
-    start_time = time.time()
-
     lineno = 0
     labyrinth = []
     for line in fileinput.input():
@@ -126,6 +113,4 @@ def readLabyrinth():
 
 
 if __name__ == '__main__':
-    start_time = time.time()
     print("".join(aStar()))
-    print("El programa tomó %s segundos " % (time.time() - start_time))
