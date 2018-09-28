@@ -5,10 +5,11 @@ Omar Sanseviero Güezmes A01021626
 """
 
 
+from heapq import *
+from collections import defaultdict
 import fileinput
 import re
-import queue
-from collections import defaultdict
+
 
 
 def checkHeuristic(child, exit):
@@ -26,18 +27,18 @@ def bfs():
     #this will be the queue array to check the nodes
     maze, start, exit, visited = readLabyrinth()
     root = maze[(start)]
-    pq = queue.PriorityQueue()
-    pq.put((0, root))
+    pq = []
+    heappush(pq, (0, root))
     numberOfActions = 0
-    while(not pq.empty()):
-        currentNode = pq.get()[1]
+    while pq:
+        currentNode = heappop(pq)[1]
         visited[currentNode[0][0]] = True
         if(currentNode[0][0] != exit):
             for child in currentNode:
                 if len(child[1]) > 1 and not visited[child[1]]:
                     heuristic = checkHeuristic(child[1], exit)
                     maze[child[1]].append([currentNode[0][0], getMove(currentNode, child[1])])
-                    pq.put((heuristic, maze[child[1]]))
+                    heappush(pq, (heuristic, maze[child[1]]))
         else:
             solution = ''
             node = currentNode
@@ -52,7 +53,6 @@ def bfs():
 
 
 def readLabyrinth():
-    global exit
     lineno = 0
     graph = defaultdict(list)
     visited = {}
@@ -65,7 +65,7 @@ def readLabyrinth():
                     currentLine = lineno-3
                     visited[(i,currentLine)] = False
                     if currentLine > 0:
-                        # Add current to previous row
+                        # Add current to previous row3
                         if prevRow[i] == '0':
                             graph[(i, currentLine-1)].append([(i, currentLine-1), (i, currentLine), 'D'])
                             graph[(i, currentLine)].append([(i, currentLine), (i, currentLine-1), 'U'])
